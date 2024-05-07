@@ -4,7 +4,7 @@
 # 
 # This file defines a win finder class that finds the best poker
 # hand in a five-card draw.
-# modified from: https://briancaffey.github.io/2018/01/02/checking-poker-hands-with-python.html
+# Reference: https://briancaffey.github.io/2018/01/02/checking-poker-hands-with-python.html
 
 import pandas as pd
 import numpy as np
