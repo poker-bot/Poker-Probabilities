@@ -203,15 +203,17 @@ class win_finder():
 
         for v in values:
             value_counts[v] += 1
-            
 
+        set_of_values = set(values)
 
-
+        # Check for straight. 
+        if five_consecutive_cards(set_of_values):
+            return True
         
-    
-
+        # Check low ace straight case.
+        else:
+            low_straight = set([14, 2, 3, 4, 5,])
+            if low_straight.issubset(set_of_values):
+                return True
+            return False
         
-    
-
-    
-
