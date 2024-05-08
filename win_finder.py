@@ -534,6 +534,78 @@ class win_finder():
         return 0 
 
 
+    def game_result(self, players_hand, other_players_hands, board):
+        """ Determine if player won, lost, or tied.
+            
+        Determine outcome of the players hand (win, loss, or tie), given
+        a series of hands and the cards on the board.
+        """
+
+        # Find the best hand out of all the other players hands
+        # Start by comparing the first hand of all of them to all the others.
+        best_other_player_hand = board + other_players_hands[0]
+
+        for hand in other_players_hands:
+            hand = hand + board
+
+            if self.check_hand(hand) > self.check_hand(best_other_player_hand):
+                best_other_player_hand = hand
+            
+            # Find the better hand if they are both the same.
+            elif self.check_hand(hand) == self.check_hand(best_other_player_hand):
+                tie_breaker = self.break_tie(hand, best_other_player_hand)
+
+                if tie_breaker == 1:
+                    best_other_player_hand = hand
+
+        # Compare player's hand with the best hand from the other players.
+        players_hand = players_hand + board
+
+        if self.check_hand(players_hand) > self.check_hand(best_other_player_hand):
+            return 'Win'
+        
+        # Find the better hand if they are both the same.
+        elif self.check_hand(players_hand) == self.check_hand(best_other_player_hand):
+            final_tie_breaker = self.break_tie(players_hand, best_other_player_hand)
+
+            if final_tie_breaker == 2:
+                return 'Loss'
+            elif final_tie_breaker == 1:
+                return 'Win'
+            else:
+                return 'Tie'
+            
+        else:
+            return 'Loss'
+        
+
+    def winning_result(self, players_hands, board):
+        """ Determine the winning card combination. 
+        
+        Determine what was the winning card combination, given
+        a series of hands and the cards on the board. """
+
+        # Find the winnning players hand.
+        best_player_hand = board + players_hands[0]
+
+        for hand in players_hands:
+            hand = hand + board
+            
+            if self.check_hand(hand) > self.check_hand(best_player_hand):
+                best_player_hand = hand
+
+            # Find the better hand if they are both the same.
+            elif self.check_hand(hand) == self.check_hand(best_player_hand):
+                tie_breaker = self.break_tie(hand, best_player_hand)
+
+                if tie_breaker == 1:
+                    best_player_hand = hand
+            
+        # Get the winning hand.
+        return self.hand_type(best_player_hand)
+
+
+                
 
 
     
