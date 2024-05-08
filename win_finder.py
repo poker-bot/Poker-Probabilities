@@ -13,7 +13,7 @@ import itertools
 from collections import defaultdict
 
 
-class win_finder():
+class Win_finder():
     """ Implement a win finder. """
 
     def __init__(self):
