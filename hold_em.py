@@ -19,7 +19,7 @@ class hold_em():
     """ Implement a game of Texas Hold'em. """
 
     def __init__(self):
-        """ Initialize a game of Texas Hold'em"""
+        """ Initialize a game of Texas Hold'em. """
 
         # Create a deck of playing cards. 
         # Deck key
@@ -67,7 +67,19 @@ class hold_em():
         # The board is the sum of the flop (3 cards), the turn (1 card), and the river (1 card).
         board = flop + turn + river
 
-        # RANDOM FOLDING?
+        # Handle folding of other players if set. 
+        if num_of_folding_players > 0 and num_of_folding_players < num_other_players:
+
+            # Incorporate the randomness of folding.
+            folding_players = np.random.randint(1, num_other_players, num_of_folding_players)
+            hands_to_delete = []
+
+            for num in folding_players:
+                hands_to_delete.append(other_players_hands)
+            
+            # Filter out the hand of the folding player from the other players.
+            for hand in hands_to_delete:
+                other_players_hands = list(filter(lambda x: x != hand, other_players_hands))
 
         # Find the winning hand.
         win_finder = Win_finder()
