@@ -125,7 +125,31 @@ class hold_em():
 
         # Return the winning hand of the game simulation.
         win_finder = Win_finder()
-        return win_finder.winning_result()
+        return win_finder.winning_result(players_hands, board)
+    
+
+    def play_game(self, players_hand, num_of_other_players, game_sims, num_of_folding_players):
+        """ Play a game of Texas Hold'em. 
+        
+        Calculate the win percentages of certain hands. 
+        """
+
+        wins = 0
+
+        # Play games through numerous simulations.
+        for i in range(game_sims):
+            result = self.holdem_simulation(players_hand, num_of_other_players, num_of_folding_players)
+
+            # Count wins and ties as wins since you split the pot and always end
+            # up with more chips in a tie scenario.
+            if result == 'Win' or result == 'Tie':
+                wins += 1
+
+            win_percentage = (wins / game_sims) * 100
+
+            return win_percentage
+
+
 
 
 
