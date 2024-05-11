@@ -15,7 +15,7 @@ from collections import defaultdict
 from win_finder import Win_finder
 
 
-class hold_em():
+class Hold_em():
     """ Implement a game of Texas Hold'em. """
 
     def __init__(self):

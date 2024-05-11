@@ -12,7 +12,9 @@ import itertools
 from collections import defaultdict
 
 
-class hand_type():
+
+
+class Hand_type():
     """ Implement a hand type detector and generator. """
 
     def __init__(self):
