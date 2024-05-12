@@ -1,11 +1,3 @@
-# gameplay.py
-# Aidan Nachi
-# 2024.06.05
-# 
-# This file defines a win finder class that finds the best poker
-# hand in a five-card draw.
-# Reference: https://briancaffey.github.io/2018/01/02/checking-poker-hands-with-python.html
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,15 +5,16 @@ import itertools
 from collections import defaultdict
 
 
-class Win_finder():
-    """ Implement a win finder. """
+class Poker_monte_carlo():
+    """ Implement a Monte Carlo Simulation for a game of poker. """
 
     def __init__(self):
         """ Create win finder instance. """
 
         # Numpy Seed for generating random numbers
         np.random.seed(0)
-
+        self.deck = list(itertools.product(range(2, 15), ['Spade', 'Heart', 'Diamond', 'Club']))
+        self.second_deck = list(itertools.product(range(2, 15), ['Spade', 'Heart', 'Diamond', 'Club']))
 
     def check_straight_flush(self, hand):
         """ Check for a straight flush. """
@@ -67,7 +60,7 @@ class Win_finder():
             value_counts[v] += 1
 
         # Return the value of values that occur 4 times.
-        return sorted([k for k, v in value_counts.items() if v == 4])
+        return sorted([k for k, v in value_counts.items() if v == 4], reverse=True)
     
 
     def check_full_house(self, hand):
@@ -110,7 +103,9 @@ class Win_finder():
 
         for v in values:
             value_counts[v] += 1
-        
+
+        sorted_value_counts = sorted(value_counts.values())
+ 
         # Return values of each card.
         return sorted([k for k, v in value_counts.items() if v == 3 or v == 2], reverse = True)
     
@@ -119,7 +114,7 @@ class Win_finder():
         """ Check if the hand is a flush. """
 
         # Extract the card suits from the hand.
-        suits = [i[0] for i in hand]
+        suits = [i[1] for i in hand]
 
         # Keep count of occurences of each of the suits.
         suit_counts = defaultdict(lambda:0)
@@ -129,7 +124,7 @@ class Win_finder():
 
         # CHECK FOR A FLUSH
         # Check if a suit occurs 5 times or more.
-        if sorted(suit_counts.values(), reverse = True)[0] >= 5:
+        if sorted(suit_counts.values(), reverse=True)[0] >= 5:
             return True
         else:
             return False
@@ -170,7 +165,7 @@ class Win_finder():
             return False
         
         # Group consecutive numbers in a number set.
-        for w, z in itertools.groupby(number_set, lambda x, y = itertools.count(): next(y) - x):
+        for w, z in itertools.groupby(number_set, lambda x, y=itertools.count(): next(y)-x):
             grouped = list(z)
 
             if len(grouped) >= 5:
@@ -179,17 +174,17 @@ class Win_finder():
         return False
     
 
-    def get_highest_consecutive_cards(self, number_set):
+    def get_highest_consecutive_card(self, number_set):
         """ Get the highest card in a straight. """
 
         # Group consecutive numbbers in a numbers set.
-        for w, z in itertools.groupby(number_set, lambda x, y = itertools.count(): next(y) - x):
+        for w, z in itertools.groupby(number_set, lambda x, y=itertools.count(): next(y)-x):
             grouped = list(z)
 
             if len(grouped) >= 5:
 
                 # Get the highest consecutive card.
-                return sorted(grouped, reverse = True)[0]
+                return sorted(grouped, reverse=True)[0]
             
     
     def check_straight(self, hand):
@@ -233,7 +228,7 @@ class Win_finder():
         # Return the high card.
         set_of_values = set(values)
         if self.five_consecutive_cards(set_of_values):
-            return self.get_highest_consecutive_cards(set_of_values)
+            return self.get_highest_consecutive_card(set_of_values)
         
         # Return the 5 if the hand is a low ace straight.
         else:
@@ -272,7 +267,7 @@ class Win_finder():
             value_counts[v] += 1
 
         # Get the card values with the corresponding value_counts of 3.
-        return sorted([k for k, v in value_counts.items() if v == 3], reverse = True)
+        return sorted([k for k, v in value_counts.items() if v==3], reverse=True)
     
 
     def check_two_pairs(self, hand):
@@ -326,7 +321,7 @@ class Win_finder():
             value_counts[v] += 1
 
         # Get the pairs from the hand.
-        return sorted([k for k, v in value_counts.items() if v == 2], reverse = True)
+        return sorted([k for k, v in value_counts.items() if v == 2], reverse=True)
     
 
     def check_hand(self, hand):
@@ -349,8 +344,7 @@ class Win_finder():
             return 3
         if self.check_one_pair(hand):
             return 2
-        else:
-            return 1
+        return 1
         
     
     def hand_type(self, hand):
@@ -372,8 +366,8 @@ class Win_finder():
             return 'two pairs'
         if self.check_one_pair(hand):
             return 'pair'
-        else:
-            return 'high cards'
+        
+        return 'high cards'
 
     
     def get_high_cards(self, hand):
@@ -397,14 +391,16 @@ class Win_finder():
     def compare_cards(self, first_hand, second_hand, num=None):
         """ Compare the high card in two hands. """
 
-        first_hand_high_card = self.get_high_cards(first_hand)[:num]
-        second_hand_high_card = self.get_high_cards(second_hand)[:num]
+        first_hand_high_cards = self.get_high_cards(first_hand)[:num]
+        second_hand_high_cards = self.get_high_cards(second_hand)[:num]
 
-        for i in range(len(first_hand_high_card)):
-            comparison = self.compare(first_hand_high_card[i], second_hand_high_card[i])
+        for i in range(len(first_hand_high_cards)):
+            comparison = self.compare(first_hand_high_cards[i], second_hand_high_cards[i])
             if comparison != 0:
                 return comparison
-    
+            
+        return 0
+
 
     def break_tie(self, first_hand, second_hand):
         """ Break tie if two hands have the same card. """
@@ -425,8 +421,8 @@ class Win_finder():
             
         # If the hands are both four of a kinds, the higher quads win.
         if hand_score == 8:
-            first_quads = self.get_quads(first_hand)
-            second_quads = self.get_quads(second_hand)
+            first_quads = self.get_quads(first_hand)[0]
+            second_quads = self.get_quads(second_hand)[0]
 
             if first_quads > second_quads:
                 return 1
@@ -442,9 +438,9 @@ class Win_finder():
             second_full_house = self.get_full_house(second_hand)[:2]
 
             for i in range(len(first_full_house)):
-                if first_full_house > second_full_house:
+                if first_full_house[i] > second_full_house[i]:
                     return 1
-                elif first_full_house < second_full_house:
+                elif first_full_house[i] < second_full_house[i]:
                     return 2
         
         # If the hands are both flushes, the flush with the higher high card
@@ -453,7 +449,7 @@ class Win_finder():
             first_flush = self.get_flush(first_hand)
             second_flush = self.get_flush(second_hand)
 
-            return self.compare_cards(first_flush, second_flush)
+            return self.compare_cards(first_flush, second_flush, 5)
         
         # If the hands are both straights, the higher straight wins.
         if hand_score == 5:
@@ -470,8 +466,8 @@ class Win_finder():
         # If both hands are trips, the higher trips winm but if the trips are the same
         # the hand with the high card wins.
         if hand_score == 4:
-            first_trips = self.get_trips(first_hand)
-            second_trips = self.get_trips(second_hand)
+            first_trips = self.get_trips(first_hand)[0]
+            second_trips = self.get_trips(second_hand)[0]
 
             if first_trips > second_trips:
                 return 1
@@ -574,7 +570,7 @@ class Win_finder():
                 return 'Win'
             else:
                 return 'Tie'
-            
+            return tie
         else:
             return 'Loss'
         
@@ -603,6 +599,312 @@ class Win_finder():
             
         # Get the winning hand.
         return self.hand_type(best_player_hand)
+    
+    def holdem_simulation(self, players_hand, num_other_players, num_of_folding_players=0):
+        """ Simulate a game of Texas Hold'em. """
+
+        # Copy deck for playing.
+        playing_deck = self.deck.copy()
+
+        # Shuffle our deck.
+        np.random.shuffle(playing_deck)
+
+        # Remove player's hand from playing deck.
+        playing_deck = list(filter(lambda x: x != players_hand[0], playing_deck))
+        playing_deck = list(filter(lambda x: x != players_hand[1], playing_deck))
+
+        # Create the other players in the game.
+        other_players_hands = []
+        for i in range(num_other_players):
+            other_players_hands.append([playing_deck.pop(0), playing_deck.pop(0)])
+
+        # Game Play
+        # Simulate flop, turn, and river.
+        #--------------------------------
+
+        # Draw four cards from the deck and burn the top card.
+        flop = playing_deck[0:4]
+        del playing_deck[0:4]
+        del flop[0]
+
+        # Turn and burn the first two cards in the deck.
+        turn = playing_deck[0:2]
+        del playing_deck[0:2]
+        del turn[0]
+
+        # Draw two cards burn one and flip the final river card.
+        river = playing_deck[0:2]
+        del playing_deck[0:2]
+        del river[0]
+
+        # The board is the sum of the flop (3 cards), the turn (1 card), and the river (1 card).
+        board = flop + turn + river
+
+        # Handle folding of other players if set. 
+        if num_of_folding_players > 0 and num_of_folding_players < num_other_players:
+
+            # Incorporate the randomness of folding.
+            folding_players = np.random.randint(1, num_other_players, num_of_folding_players)
+            hands_to_delete = []
+
+            for num in folding_players:
+                hands_to_delete.append(other_players_hands)
+            
+            # Filter out the hand of the folding player from the other players.
+            for hand in hands_to_delete:
+                other_players_hands = list(filter(lambda x: x != hand, other_players_hands))
+
+        # Find the winning hand.
+        return self.game_result(players_hand, other_players_hands, board)
+    
+
+    def holdem_simulation_winning_hand(self, num_of_players):
+        """ Simulate a game of Texas Holdem and get the winning hand. """
+
+        # Make a copy and shuffle the deck to play.
+        second_playing_deck = self.second_deck.copy()
+        np.random.shuffle(second_playing_deck)
+
+        # Create players to and deal them hole cards so we can find the winner.
+        players_hands = []
+        for i in range(num_of_players):
+            players_hands.append([second_playing_deck.pop(0), second_playing_deck.pop(0)])
+
+
+        # Simulate the flop, turn, and river to get the board.
+        # ----------------------------------------------------
+        # Take 4 cards from the top of the deck, burn one and flip three.
+        flop = second_playing_deck[0:4]
+        del second_playing_deck[0:4]
+        del flop[0]
+        
+        # Take two cards from the top of the deck, burn and turn the
+        # turn card (fourth community card).
+        turn = second_playing_deck[0:2]
+        del second_playing_deck[0:2]
+        del turn[0]
+
+        # Take two cards from the top of the deck, then burn one and turn
+        # the river card (last community card).
+        river = second_playing_deck[0:2]
+        del second_playing_deck[0:2]
+        del river[0]
+
+        # The sum of cards from the flop, turn, and river make up the board.
+        board = flop + turn + river
+
+
+        # Return the winning hand of the game simulation.
+        return self.winning_result(players_hands, board)
+    
+
+    def play_game(self, players_hand, num_of_other_players, game_sims, num_of_folding_players):
+        """ Play a game of Texas Hold'em. 
+        
+        Calculate the win percentages of certain hands. 
+        """
+
+        wins = 0
+
+        # Play games through numerous simulations.
+        for i in range(game_sims):
+            result = self.holdem_simulation(players_hand, num_of_other_players, num_of_folding_players)
+
+            # Count wins and ties as wins since you split the pot and always end
+            # up with more chips in a tie scenario.
+            if result == 'Win' or result == 'Tie':
+                wins += 1
+
+        win_percentage = (wins / game_sims) * 100
+        return win_percentage
+
+    def is_pocket_pair(self, cards):
+        """ Detect a pocket pair. """
+
+        # Check if rank of cards are both the same.
+        if cards[0][0] == cards[1][0]:
+            return True
+        else:
+            return False
+        
+    
+    def is_suited(self, cards):
+        """ Detect if the hand is suited. """
+
+        # Check if the suit of both cards are the same.
+        if cards[0][1] == cards[1][1]:
+            return True
+        else:
+            return False
+        
+
+    def is_connected(self, cards):
+        """ Detect if the cards are connected. """
+
+        # Check if the card values are consecutive (ex: 1,2 or 8,7)
+        if (cards[0][0] + 1) == cards[1][0]:
+            return True
+        elif (cards[0][0] - 1) == cards[1][0]:
+            return True
+        
+        # Check Ace-2 case.
+        elif cards[0][0] == 14:
+            if cards[1][0] == 2:
+                return True
+            else: return False
+        
+        elif cards[0][0] == 2:
+            if cards[1][0] == 14:
+                return True
+            else:
+                return False
+            
+        else:
+            return False
+        
+
+    def get_suited_cards(self, suit, cards):
+        """ Generate a suited hand type. """
+
+        potential_cards = list(filter(lambda x: x[1] == suit, cards))
+        return potential_cards
+    
+
+    def get_pair_cards(self, value, cards):
+        """ Generate a pair hand type. """
+
+        potential_cards = list(filter(lambda x: x[0] == value, cards))
+        return potential_cards
+    
+
+    def get_connected_cards(self, value, cards):
+        """ Generate a connected hand type. """
+
+        potential_cards = list(filter(lambda x: x[0] == value or x[0] + 1 == value, cards))
+        return potential_cards
+    
+
+    def generate_hand(self, hand_type):
+        """ Generate a certain hand type. """
+
+        # Shuffle a deck of cards.
+        deck = list(itertools.product(range(2,15), ['Spade', 'Heart', 'Diamond', 'Club']))
+        playing_deck = deck.copy()
+        np.random.shuffle(playing_deck)
+
+        # Make a random hand based on a selected hand type from the 
+        # shuffled playing deck of cards.
+        players_hand = []
+
+        if hand_type == 'suited':
+            suits = ['Spade', 'Heart', 'Diamond', 'Club']
+            np.random.shuffle(suits)
+            suit = suits[0]
+
+            players_hand = self.get_suited_cards(suit, playing_deck)[:2]
+        
+        elif hand_type == 'pairs':
+            values = list(range(2, 15))
+            np.random.shuffle(values)
+            value = values[0]
+            
+            players_hand = self.get_pair_cards(value, playing_deck)[:2]
+
+        elif hand_type == 'conected':
+            values = list(range(2, 15))
+            np.random.shuffle(values)
+            value = values[0]
+
+            players_hand = self.get_connected_cards(value, playing_deck)[:2]
+
+        elif hand_type == 'conected_suited':
+            suits = ['Spade', 'Heart', 'Diamond', 'Club']
+            np.random.shuffle(suits)
+            suit = suits[0]
+
+            values = list(range(2, 15))
+            np.random.shuffle(values)
+            value = values[0]
+
+            connected_cards = self.get_connected_cards(value, playing_deck)
+            first_card = connected_cards[0]
+
+            # Only get cards that aren't our card for the potential second card.
+            potential_second_cards = list(filter(lambda x: x != first_card[0], connected_cards))
+            second_cards = potential_second_cards[0]
+
+            players_hand = [first_card, second_cards]
+
+        else:
+            return 'Unknown hand type!'
+        
+        return players_hand
+    
+    def pocket_hand_analysis(self):
+        """ Collect data for pocket hand winning percentages. 
+
+        Go through every possible pocket cards combo and record the winning %
+        for games with varrying amounts of other players.
+        """
+
+
+        # Set up the simulation with the deck, hand combos, and the amount of games
+        # simulated.
+        pocket_deck = list(itertools.product(range(2, 15), ['Spade', 'Heart', 'Diamond', 'Club']))
+        hand_combinations = list(itertools.combinations(pocket_deck, 2))
+        hand_combinations = [list(row) for row in hand_combinations]
+        num_of_folding_players = 0
+        game_simulations = 10000
+
+        # Choose random hands when simulating.
+        np.random.shuffle(hand_combinations)
+
+        columns = ['Pocket Cards', 'Pair', 'Suited', 'Connected', 'Win Pct1', 'Win Pct2', 'Win Pct3', 'Win Pct4', 'Win Pct5', 'Win Pct6', 'Win Pct7', 'Win Pct8']
+        hands_df = pd.DataFrame(columns=columns)
+
+
+        # Simulate desired amount of poker games.
+        for hand in hand_combinations:
+                pocket_cards = str(hand)
+                each_hands_data_dict = {'Pocket Cards': pocket_cards, 
+                                        'Pair': self.is_pocket_pair(hand), 
+                                        'Suited': self.is_suited(hand), 
+                                        'Connected': self.is_connected(hand),
+                                        }
+                for i in range(1, 9):
+                    each_hands_data_dict['Win Pct' + str(i)] = self.play_game(hand, i, game_simulations, num_of_folding_players)
+
+                new_row_df = pd.DataFrame(each_hands_data_dict, index=[0])
+                hands_df = pd.concat([hands_df, new_row_df], ignore_index=True)
+                    
+
+
+        # Store data frame of simulated games in a csv.
+        print(hands_df)
+        hands_df.to_csv('pocket_hand_wins.csv')
+
+
+
+            
+
+
+
+        
+    
+
+        
+        
+
+    
+
+
+
+
+
+
+        
+
+
 
 
                 
