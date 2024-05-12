@@ -28,7 +28,7 @@ class Win_finder():
 
         if self.check_flush(hand):
             hand = self.get_flush(hand)
-            if self.heck_straight(hand) and len(hand) >= 5:
+            if self.check_straight(hand) and len(hand) >= 5:
                 return True
             else:
                 return False
@@ -86,7 +86,7 @@ class Win_finder():
 
         # CHECK FOR A FULL HOUSE
         # Check for a 3 of a kind.
-        if 3 in sorted_value_counts.count:
+        if 3 in sorted_value_counts:
 
             # Check for a second three of a kind.
             if sorted_value_counts.count(3) > 1:
@@ -125,7 +125,7 @@ class Win_finder():
         suit_counts = defaultdict(lambda:0)
 
         for suit in suits:
-            suit_counts[suits] += 1
+            suit_counts[suit] += 1
 
         # CHECK FOR A FLUSH
         # Check if a suit occurs 5 times or more.
@@ -145,7 +145,7 @@ class Win_finder():
         suit_counts = defaultdict(lambda:0)
 
         for suit in suits:
-            suit_counts[suits] += 1
+            suit_counts[suit] += 1
 
         # Find the count of the most frequent suit.
         top_suit_count = sorted(suit_counts.values(), reverse=True)[0]
