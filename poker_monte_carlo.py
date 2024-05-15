@@ -854,7 +854,7 @@ class Poker_monte_carlo():
         hand_combinations = list(itertools.combinations(pocket_deck, 2))
         hand_combinations = [list(row) for row in hand_combinations]
         num_of_folding_players = 0
-        game_simulations = 100
+        game_simulations = 1000
 
         # Choose random hands when simulating.
         np.random.shuffle(hand_combinations)
