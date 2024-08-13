@@ -881,7 +881,7 @@ class Poker_monte_carlo():
 
         # Store data frame of simulated games in a csv.
         print(hands_df)
-        hands_df.to_csv('pocket_hand_wins.csv')
+        hands_df.to_csv('data/pocket_hand_wins.csv')
 
 
 
