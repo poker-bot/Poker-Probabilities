@@ -1,7 +1,7 @@
 import csv
 
 # Card rankings and suit mappings
-rank_map = {2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: '10', 11: 'J', 12: 'Q', 13: 'K', 14: 'A'}
+rank_map = {2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9', 10: 'T', 11: 'J', 12: 'Q', 13: 'K', 14: 'A'}
 suit_map = {'Spade': 's', 'Heart': 'h', 'Diamond': 'd', 'Club': 'c'}
 reverse_rank_map = {v: k for k, v in rank_map.items()}
 
@@ -38,7 +38,7 @@ def get_hand_data(card1, card2):
     return result
 
 # Example usage
-hand_data = get_hand_data("2s", "9d")
+hand_data = get_hand_data("Kh", "Ts")
 
 print(f"Pocket cards: {hand_data['pocket_cards']}")
 print(f"Pair: {hand_data['pair']}")

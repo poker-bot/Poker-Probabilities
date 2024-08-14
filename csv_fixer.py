@@ -2,7 +2,7 @@ import csv
 
 def normalize_card(card):
     rank, suit = card
-    rank_map = {11: 'J', 12: 'Q', 13: 'K', 14: 'A'}
+    rank_map = {10: 'T', 11: 'J', 12: 'Q', 13: 'K', 14: 'A'}
     suit_map = {'Spade': 's', 'Heart': 'h', 'Diamond': 'd', 'Club': 'c'}
     
     rank = rank_map.get(rank, str(rank))
@@ -16,7 +16,7 @@ def normalize_pocket_cards(card1, card2):
     
     # Sort cards based on rank first, then suit
     if int(card1[0]) != int(card2[0]):
-        return '_'.join(sorted([normalized_card1, normalized_card2], key=lambda x: int(x[:-1]) if x[:-1].isdigit() else {'J':11, 'Q':12, 'K':13, 'A':14}[x[:-1]]))
+        return '_'.join(sorted([normalized_card1, normalized_card2], key=lambda x: int(x[:-1]) if x[:-1].isdigit() else {'T':10, 'J':11, 'Q':12, 'K':13, 'A':14}[x[:-1]]))
     else:
         return '_'.join(sorted([normalized_card1, normalized_card2], key=lambda x: x[-1]))
 
